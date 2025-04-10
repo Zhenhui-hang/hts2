@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 卡片样式 */
+.card {
+  margin-bottom: 1rem;
+}
+
 /* 其他样式保持不变 */
 body {
   margin: 0;
@@ -15,4 +20,62 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+@media print {
+  .container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  .mt-8 {
+    padding: 0 30px!important;
+    margin-top: 0 !important;
+  }
+  .print-hide {
+    display: none !important;
+  }
+  .card {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 0 5rem !important;
+  }
+  .card-body {
+    padding: 0 !important;
+  }
+  .problem-grid {
+    background: white !important;
+    box-shadow: none !important;
+  }
+  .text-lg {
+    font-size: 1rem;
+    letter-spacing: -0.15em;
+  }
+  .font-mono {
+    font-size: 1rem !important;
+  }
+  .min-h-screen,
+  .bg-base-200,
+  .py-6,
+  .mb-6 {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+  .mb-6 {
+    justify-content: center!important;
+  }
+  .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0 !important;
+  }
+  .p-3 {
+    padding: 0.2rem;
+  }
+  .p-4 {
+    padding-top: 1rem !important;
+  }
 }

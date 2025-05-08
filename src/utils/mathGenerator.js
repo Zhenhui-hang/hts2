@@ -1,6 +1,22 @@
 // 生成指定范围内的随机数
-const getRandomNumber = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+const getRandomNumber = (min, max, type = 'normal') => {
+  if (type === 'tens') {
+    // 将范围调整为最近的整十数
+    const adjustedMin = Math.ceil(min / 10) * 10;
+    const adjustedMax = Math.floor(max / 10) * 10;
+    if (adjustedMin > adjustedMax) {
+      throw new Error('在指定范围内没有整十数');
+    }
+    return Math.floor(Math.random() * ((adjustedMax - adjustedMin) / 10 + 1)) * 10 + adjustedMin;
+  } else if (type === 'decimal') {
+    // 生成一位小数
+    const wholeNumber = Math.floor(Math.random() * (max - min)) + min;
+    const decimal = Math.floor(Math.random() * 9) + 1; // 1-9，避免生成.0
+    const result = wholeNumber + decimal / 10;
+    return result > max ? result - 1 : result;
+  } else {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 };
 
 // 验证范围设置是否合理
@@ -23,8 +39,8 @@ const validateRange = (operator, ranges) => {
 
 // 生成符合范围的数字
 const generateNumberInRange = (range, operator, otherNum = null, result = null, position = null) => {
-  const { min, max } = range;
-  if (!otherNum || !result) return getRandomNumber(min, max);
+  const { min, max, type = 'normal' } = range;
+  if (!otherNum || !result) return getRandomNumber(min, max, type);
   
   let validNum;
   switch(operator) {
@@ -41,9 +57,13 @@ const generateNumberInRange = (range, operator, otherNum = null, result = null, 
       validNum = position === 1 ? result * otherNum : result * otherNum;
       break;
     default:
-      return getRandomNumber(min, max);
+      return getRandomNumber(min, max, type);
   }
   
+  // 根据type调整最终结果
+  if (type === 'tens') {
+    validNum = Math.round(validNum / 10) * 10;
+  }
   return Math.max(min, Math.min(max, validNum));
 };
 
@@ -198,16 +218,17 @@ export const generateAddition = (isReverse = false, ranges = null) => {
   const maxAttempts = 100;
 
   do {
-    num1 = generateNumberInRange(r.a, 'addition');
+    num1 = generateNumberInRange({...r.a, type: r.a.type || 'normal'}, 'addition');
     // 确保num2不会导致结果超出范围
     const maxAllowedNum2 = r.result.max - num1;
     const adjustedRange = {
       min: Math.max(r.b.min, r.result.min - num1),
-      max: Math.min(r.b.max, maxAllowedNum2)
+      max: Math.min(r.b.max, maxAllowedNum2),
+      type: r.b.type || 'normal'
     };
     num2 = generateNumberInRange(adjustedRange, 'addition');
     result = num1 + num2;
-    attempts++;
+    attempts++
   } while ((result < r.result.min || result > r.result.max) && attempts < maxAttempts);
 
   if (attempts >= maxAttempts) {
@@ -340,28 +361,42 @@ export const generateVerticalProblem = (operator, ranges = null, hasRemainder = 
     switch(operator) {
       case 'addition':
         num1 = generateNumberInRange(r.a, 'addition');
-        num2 = generateNumberInRange(r.b, 'addition');
+        num2 = generateNumberInRange({...r.b, type: r.b.type || 'normal'}, 'addition');
         result = num1 + num2;
         break;
       case 'subtraction':
         num1 = generateNumberInRange(r.a, 'subtraction');
-        num2 = generateNumberInRange({...r.b, max: num1}, 'subtraction');
+        num2 = generateNumberInRange({...r.b, max: num1, type: r.b.type || 'normal'}, 'subtraction');
         result = num1 - num2;
         break;
       case 'multiplication':
         num1 = generateNumberInRange(r.a, 'multiplication');
-        num2 = generateNumberInRange(r.b, 'multiplication');
+        num2 = generateNumberInRange({...r.b, type: r.b.type || 'normal'}, 'multiplication');
         result = num1 * num2;
         break;
       case 'division':
         if (hasRemainder) {
-          num2 = generateNumberInRange({...r.b, min: 1}, 'division');
-          result = generateNumberInRange(r.result, 'division');
+          // 先生成除数，确保在范围内且不为0
+          num2 = generateNumberInRange({...r.b, min: 1, max: Math.min(r.b.max, 30)}, 'division');
+          // 生成商，确保在范围内
+          result = generateNumberInRange({...r.result, min: 1, max: Math.min(r.result.max, 4000)}, 'division');
+          // 生成余数
           remainder = getRandomNumber(1, num2 - 1);
+          // 计算被除数，确保在范围内
           num1 = num2 * result + remainder;
+          // 如果被除数超出范围，调整结果
+          if (num1 > r.a.max || num1 < r.a.min) {
+            result = Math.floor((r.a.max - remainder) / num2);
+            num1 = num2 * result + remainder;
+          }
         } else {
-          num2 = generateNumberInRange({...r.b, min: 1}, 'division');
-          result = generateNumberInRange(r.result, 'division');
+          // 先生成除数，确保在范围内且不为0
+          num2 = generateNumberInRange({...r.b, min: 1, max: Math.min(r.b.max, 30)}, 'division');
+          // 计算最大可能的商
+          const maxResult = Math.floor(r.a.max / num2);
+          // 生成商，确保在范围内
+          result = generateNumberInRange({...r.result, min: 1, max: Math.min(maxResult, 4000)}, 'division');
+          // 计算被除数
           num1 = num2 * result;
         }
         break;
@@ -459,4 +494,27 @@ export const generateProblems = (operators, count, reversePercentage, problemTyp
 
   // 随机打乱题目顺序
   return problems.sort(() => Math.random() - 0.5);
+};
+
+// 添加数值生成函数
+const generateNumber = (min, max, type) => {
+  switch (type) {
+    case 'tens':
+      // 生成整十数
+      const tens = Math.floor(min / 10) * 10;
+      const maxTens = Math.floor(max / 10) * 10;
+      if (tens > maxTens) {
+        throw new Error('无法在指定范围内生成整十数');
+      }
+      return tens + Math.floor(Math.random() * ((maxTens - tens) / 10 + 1)) * 10;
+    
+    case 'decimal':
+      // 生成一位小数
+      const whole = Math.floor(Math.random() * (max - min) + min);
+      return whole + 0.1;
+    
+    default:
+      // 无限制
+      return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 };

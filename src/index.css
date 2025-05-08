@@ -41,7 +41,16 @@ code {
     background: none !important;
     box-shadow: none !important;
     border: none !important;
+  }
+  .card[data-type='vertical'] {
     margin: 0 0 5rem !important;
+  }
+  .card[data-type='addition'],
+  .card[data-type='subtraction'],
+  .card[data-type='multiplication'],
+  .card[data-type='division'],
+  .card[data-type='mixed'] {
+    margin: 0 !important;
   }
   .card-body {
     padding: 0 !important;
@@ -68,6 +77,16 @@ code {
   }
   .mb-6 {
     justify-content: center!important;
+  }
+  .mb-2,
+  .text-sm {
+    justify-content:center!important;
+    text-align: center;
+  }
+  .text-sm {
+    margin-bottom: -10px!important;
+    color: rgb(107 114 128 / var(--tw-text-opacity));
+    margin-bottom: 30px!important;
   }
   .space-y-4 > :not([hidden]) ~ :not([hidden]) {
     margin-top: 0 !important;

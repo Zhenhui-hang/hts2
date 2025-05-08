@@ -1,6 +1,12 @@
-# Getting Started with Create React App
+# 小学练习助手
+## 简介
+小学练习助手是一款专为小学生设计的练习工具，旨在帮助他们在数学、英语等学科中提高学习效率和准确性。
+## 功能
+- 数学练习：提供各种数学题目，包括加法、减法、乘法、除法等。
+- 历史记录：记录用户的练习历史，提供回顾和分析功能。
+- 个性化设置：根据用户的喜好和需求，提供个性化的设置选项。
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
 
 ## 局域网访问说明
 

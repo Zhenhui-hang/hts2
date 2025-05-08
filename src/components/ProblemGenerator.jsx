@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { generateProblems, generateVerticalProblem } from '../utils/mathGenerator';
 import { FaPrint, FaCog } from 'react-icons/fa';
 import Toast from './Toast';
+import { Popover } from '@headlessui/react';
 
 const ProblemGenerator = () => {
   const [error, setError] = useState(null);
@@ -13,9 +14,9 @@ const ProblemGenerator = () => {
     problemType: 1, // 1: 双操作数, 2: 三操作数, 3: 竖式计算
     hasRemainder: false,
     ranges: {
-      a: { min: 0, max: 20 },
-      b: { min: 0, max: 20 },
-      c: { min: 0, max: 20 },
+      a: { min: 0, max: 20, type: 'normal' },
+      b: { min: 0, max: 20, type: 'normal' },
+      c: { min: 0, max: 20, type: 'normal' },
       result: { min: 0, max: 20 }
     }
   });
@@ -69,8 +70,8 @@ const ProblemGenerator = () => {
       <div className="container mx-auto p-4">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-4">
                 <h2 className="card-title text-2xl">数学练习</h2>
                 <button
                   onClick={() => window.print()}
@@ -81,6 +82,7 @@ const ProblemGenerator = () => {
                 </button>
               </div>
             </div>
+            <div className="text-sm text-gray-500 mb-6">{new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'numeric', day: 'numeric' })}</div>
             
             <div className="space-y-6 print-hide">
               <div className="form-control">
@@ -180,8 +182,62 @@ const ProblemGenerator = () => {
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="label">
+                    <label className="label flex justify-between items-center">
                       <span className="label-text">A的范围</span>
+                      <Popover className="relative">
+                        <Popover.Button className="btn btn-ghost btn-xs">
+                          <FaCog className={settings.ranges.a.type !== 'normal' ? 'text-primary' : ''} />
+                        </Popover.Button>
+                        <Popover.Panel className="absolute z-10 right-0 mt-2 w-48 bg-base-100 shadow-xl rounded-lg p-2">
+                          <div className="space-y-2">
+                            <label className="label cursor-pointer justify-start gap-2">
+                              <input
+                                type="radio"
+                                className="radio radio-primary"
+                                checked={settings.ranges.a.type === 'normal'}
+                                onChange={() => setSettings(prev => ({
+                                  ...prev,
+                                  ranges: {
+                                    ...prev.ranges,
+                                    a: { ...prev.ranges.a, type: 'normal' }
+                                  }
+                                }))}
+                              />
+                              <span className="label-text">无限制</span>
+                            </label>
+                            <label className="label cursor-pointer justify-start gap-2">
+                              <input
+                                type="radio"
+                                className="radio radio-primary"
+                                checked={settings.ranges.a.type === 'tens'}
+                                onChange={() => setSettings(prev => ({
+                                  ...prev,
+                                  ranges: {
+                                    ...prev.ranges,
+                                    a: { ...prev.ranges.a, type: 'tens' }
+                                  }
+                                }))}
+                              />
+                              <span className="label-text">整十</span>
+                            </label>
+                            <label className="label cursor-pointer justify-start gap-2">
+                              <input
+                                type="radio"
+                                className="radio radio-primary"
+                                checked={settings.ranges.a.type === 'decimal'}
+                                onChange={() => setSettings(prev => ({
+                                  ...prev,
+                                  ranges: {
+                                    ...prev.ranges,
+                                    a: { ...prev.ranges.a, type: 'decimal' }
+                                  }
+                                }))}
+                              />
+                              <span className="label-text">一位小数</span>
+                            </label>
+                          </div>
+                        </Popover.Panel>
+                      </Popover>
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -213,8 +269,62 @@ const ProblemGenerator = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="label">
+                    <label className="label flex justify-between items-center">
                       <span className="label-text">B的范围</span>
+                      <Popover className="relative">
+                        <Popover.Button className="btn btn-ghost btn-xs">
+                          <FaCog className={settings.ranges.b.type !== 'normal' ? 'text-primary' : ''} />
+                        </Popover.Button>
+                        <Popover.Panel className="absolute z-10 right-0 mt-2 w-48 bg-base-100 shadow-xl rounded-lg p-2">
+                          <div className="space-y-2">
+                            <label className="label cursor-pointer justify-start gap-2">
+                              <input
+                                type="radio"
+                                className="radio radio-primary"
+                                checked={settings.ranges.b.type === 'normal'}
+                                onChange={() => setSettings(prev => ({
+                                  ...prev,
+                                  ranges: {
+                                    ...prev.ranges,
+                                    b: { ...prev.ranges.b, type: 'normal' }
+                                  }
+                                }))}
+                              />
+                              <span className="label-text">无限制</span>
+                            </label>
+                            <label className="label cursor-pointer justify-start gap-2">
+                              <input
+                                type="radio"
+                                className="radio radio-primary"
+                                checked={settings.ranges.b.type === 'tens'}
+                                onChange={() => setSettings(prev => ({
+                                  ...prev,
+                                  ranges: {
+                                    ...prev.ranges,
+                                    b: { ...prev.ranges.b, type: 'tens' }
+                                  }
+                                }))}
+                              />
+                              <span className="label-text">整十</span>
+                            </label>
+                            <label className="label cursor-pointer justify-start gap-2">
+                              <input
+                                type="radio"
+                                className="radio radio-primary"
+                                checked={settings.ranges.b.type === 'decimal'}
+                                onChange={() => setSettings(prev => ({
+                                  ...prev,
+                                  ranges: {
+                                    ...prev.ranges,
+                                    b: { ...prev.ranges.b, type: 'decimal' }
+                                  }
+                                }))}
+                              />
+                              <span className="label-text">一位小数</span>
+                            </label>
+                          </div>
+                        </Popover.Panel>
+                      </Popover>
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -247,8 +357,62 @@ const ProblemGenerator = () => {
                   </div>
                   {settings.problemType === 2 && (
                     <div>
-                      <label className="label">
+                      <label className="label flex justify-between items-center">
                         <span className="label-text">C的范围</span>
+                        <Popover className="relative">
+                          <Popover.Button className="btn btn-ghost btn-xs">
+                            <FaCog className={settings.ranges.c.type !== 'normal' ? 'text-primary' : ''} />
+                          </Popover.Button>
+                          <Popover.Panel className="absolute z-10 right-0 mt-2 w-48 bg-base-100 shadow-xl rounded-lg p-2">
+                            <div className="space-y-2">
+                              <label className="label cursor-pointer justify-start gap-2">
+                                <input
+                                  type="radio"
+                                  className="radio radio-primary"
+                                  checked={settings.ranges.c.type === 'normal'}
+                                  onChange={() => setSettings(prev => ({
+                                    ...prev,
+                                    ranges: {
+                                      ...prev.ranges,
+                                      c: { ...prev.ranges.c, type: 'normal' }
+                                    }
+                                  }))}
+                                />
+                                <span className="label-text">无限制</span>
+                              </label>
+                              <label className="label cursor-pointer justify-start gap-2">
+                                <input
+                                  type="radio"
+                                  className="radio radio-primary"
+                                  checked={settings.ranges.c.type === 'tens'}
+                                  onChange={() => setSettings(prev => ({
+                                    ...prev,
+                                    ranges: {
+                                      ...prev.ranges,
+                                      c: { ...prev.ranges.c, type: 'tens' }
+                                    }
+                                  }))}
+                                />
+                                <span className="label-text">整十</span>
+                              </label>
+                              <label className="label cursor-pointer justify-start gap-2">
+                                <input
+                                  type="radio"
+                                  className="radio radio-primary"
+                                  checked={settings.ranges.c.type === 'decimal'}
+                                  onChange={() => setSettings(prev => ({
+                                    ...prev,
+                                    ranges: {
+                                      ...prev.ranges,
+                                      c: { ...prev.ranges.c, type: 'decimal' }
+                                    }
+                                  }))}
+                                />
+                                <span className="label-text">一位小数</span>
+                              </label>
+                            </div>
+                          </Popover.Panel>
+                        </Popover>
                       </label>
                       <div className="flex gap-2">
                         <input
@@ -363,6 +527,6 @@ const ProblemGenerator = () => {
   );
 };
 
-// 导出 ProblemGenerator 组件作为默认导出
-// 这行代码使得其他文件可以通过 import ProblemGenerator from './ProblemGenerator' 来导入这个组件
+
+
 export default ProblemGenerator;
